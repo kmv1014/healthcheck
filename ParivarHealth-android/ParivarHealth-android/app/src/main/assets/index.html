@@ -1,0 +1,885 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;padding:0;font:14px sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>Parivar Health</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: phone-first app shell — member strip on top, one view at a time, bottom tab bar, floating "Add report". */
+:root{
+  --bg:#F2F4F1; --surface:#FFFFFF; --sunk:#E8ECE8; --ink:#17242E; --muted:#5B6B70; --line:#D9E0DC;
+  --accent:#0E6E62; --accent-ink:#FFFFFF; --accent-soft:#DCEDE8;
+  --high:#B93E0C; --high-soft:#FBE5D9; --low:#2459A8; --low-soft:#DFE8F7; --ok:#3B7A4C; --ok-soft:#E2F0E4; --warn:#9A6512; --warn-soft:#F8EBD3;
+  --m1:#0E6E62; --m2:#9C4A7A; --m3:#2E5E9E; --m4:#A2611A; --m5:#5B5FA8;
+  --shadow:0 8px 28px rgba(23,36,46,.14);
+  --f-display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
+  --f-body:"Atkinson Hyperlegible", "Segoe UI", Roboto, sans-serif;
+  --f-data:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1719; --surface:#172226; --sunk:#1D2A2E; --ink:#E4ECE9; --muted:#93A4A5; --line:#2A393E;
+  --accent:#4FC1AE; --accent-ink:#06201B; --accent-soft:#163A35;
+  --high:#F08A5D; --high-soft:#3B2219; --low:#82AEF0; --low-soft:#1B2840; --ok:#7BC48E; --ok-soft:#183020; --warn:#E2B04F; --warn-soft:#352812;
+  --m1:#4FC1AE; --m2:#E08BBB; --m3:#82AEF0; --m4:#E8A55C; --m5:#A3A6F0;
+  --shadow:0 8px 28px rgba(0,0,0,.45); color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0F1719; --surface:#172226; --sunk:#1D2A2E; --ink:#E4ECE9; --muted:#93A4A5; --line:#2A393E;
+  --accent:#4FC1AE; --accent-ink:#06201B; --accent-soft:#163A35;
+  --high:#F08A5D; --high-soft:#3B2219; --low:#82AEF0; --low-soft:#1B2840; --ok:#7BC48E; --ok-soft:#183020; --warn:#E2B04F; --warn-soft:#352812;
+  --m1:#4FC1AE; --m2:#E08BBB; --m3:#82AEF0; --m4:#E8A55C; --m5:#A3A6F0;
+  --shadow:0 8px 28px rgba(0,0,0,.45); color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg)}
+html{-webkit-tap-highlight-color:transparent}
+button,a,input,select,label,textarea,.tile{touch-action:manipulation}
+body{color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.45;-webkit-text-size-adjust:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px}
+.wrap{max-width:720px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 140px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;letter-spacing:-.01em}
+.num{font-family:var(--f-data);font-variant-numeric:tabular-nums}
+.label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.muted{color:var(--muted)}
+
+/* Top */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);padding-block:14px 10px;display:grid;gap:12px}
+.brand{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand h1{font-size:24px;font-weight:800;display:flex;align-items:center;gap:8px;white-space:nowrap}
+@media (max-width:400px){.brand h1{font-size:20px}.brand h1 svg{width:22px;height:22px}.sync{font-size:11px;padding:3px 8px}.summary>div{padding:10px}.summary b{font-size:19px}.summary span{font-size:12px}}
+.brand h1 svg{color:var(--accent)}
+.sync{font-size:12px;padding:4px 10px;border-radius:999px;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.sync.cloud{background:var(--ok-soft);color:var(--ok)}
+.members{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin-inline:-4px;padding:2px 4px}
+.members::-webkit-scrollbar{display:none}
+.members{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);padding-right:28px;scroll-snap-type:x proximity}
+.chip{flex:none;display:flex;align-items:center;gap:8px;border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 14px 5px 5px;font-weight:700;font-size:15px;min-height:42px}
+.chip[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.chip.add{padding:5px 14px;color:var(--accent);border-style:dashed}
+.av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;color:#fff;flex:none}
+.chip[aria-pressed="true"] .av{box-shadow:0 0 0 2px var(--bg)}
+
+/* Views */
+.view{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;padding-top:6px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+.summary>div{background:var(--surface);padding:12px 14px;display:grid;gap:2px}
+.summary b{font-family:var(--f-display);font-size:22px;font-weight:800}
+.summary span{font-size:13px;color:var(--muted)}
+.section-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.section-h h2{font-size:20px}
+.list{display:grid;gap:10px}
+.rec{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:left;width:100%}
+.rec:hover{border-color:var(--muted)}
+.rec .ic{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}
+.rec .ic.rx{background:var(--warn-soft);color:var(--warn)}
+.rec .ic.doc{background:var(--sunk);color:var(--muted)}
+.rec h3{font-family:var(--f-body);font-size:16px;font-weight:700;letter-spacing:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rec p{margin:0;font-size:13.5px;color:var(--muted)}
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.pill.h{background:var(--high-soft);color:var(--high)}
+.pill.l{background:var(--low-soft);color:var(--low)}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.ex{background:var(--warn-soft);color:var(--warn)}
+.pill.n{background:var(--sunk);color:var(--muted)}
+.empty{text-align:center;padding:32px 20px;display:grid;gap:12px;justify-items:center}
+.empty h2{font-size:22px}
+.empty p{margin:0;color:var(--muted);max-width:34ch}
+.btn{border:0;border-radius:12px;padding:12px 18px;font-weight:700;background:var(--accent);color:var(--accent-ink);min-height:46px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn.ghost{background:transparent;color:var(--accent);border:1.5px solid var(--line)}
+.btn.quiet{background:var(--sunk);color:var(--ink)}
+.btn.danger{background:transparent;color:var(--high);border:1.5px solid var(--line)}
+.btn.small{min-height:36px;padding:7px 12px;font-size:14px;border-radius:10px}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.banner{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:var(--warn-soft);color:var(--warn);border-radius:12px;padding:10px 14px;font-size:14px;font-weight:700}
+.banner button{background:none;border:0;color:inherit;text-decoration:underline;font-weight:700;padding:8px 4px;min-height:40px}
+
+/* Trends */
+.params{display:flex;gap:8px;flex-wrap:wrap}
+.pchip{border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:6px 10px;font-size:14px;font-weight:700;display:flex;gap:6px;align-items:center}
+.pchip[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--ink)}
+.dot{width:8px;height:8px;border-radius:50%;flex:none}
+.dot.h{background:var(--high)}.dot.l{background:var(--low)}.dot.ok{background:var(--ok)}
+.chart-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.chart-head h2{font-size:22px}
+.big{font-family:var(--f-data);font-size:30px;font-weight:500;line-height:1}
+.chart svg{width:100%;height:auto;display:block}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--sunk);font-weight:700}
+td.v{font-family:var(--f-data);font-variant-numeric:tabular-nums;text-align:right}
+td.v.h{color:var(--high);font-weight:700}
+td.v.l{color:var(--low);font-weight:700}
+td.pn{position:sticky;left:0;background:var(--surface);font-weight:700;z-index:1;max-width:44vw;overflow:hidden;text-overflow:ellipsis}
+th.pn{position:sticky;left:0;z-index:2}
+tr.clickable{cursor:pointer}
+tr.clickable:hover td{background:var(--sunk)}
+tr.sel td{background:var(--accent-soft)}
+.ref{font-size:12px;color:var(--muted);font-family:var(--f-data)}
+
+/* Medicines */
+.med{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.med:last-child{border-bottom:0}
+.med b{font-size:16px}
+.med p{margin:0;font-size:14px;color:var(--muted)}
+.x{border:0;background:var(--sunk);width:40px;height:40px;flex:none;border-radius:50%;display:grid;place-items:center;color:var(--muted)}
+.ix{border-radius:14px;padding:14px;display:grid;gap:6px;border:1px solid var(--line);background:var(--surface)}
+.ix.major{border-left:6px solid var(--high)}
+.ix.moderate{border-left:6px solid var(--warn)}
+.ix.minor{border-left:6px solid var(--low)}
+.ix h3{font-family:var(--f-body);font-size:16px;font-weight:700;letter-spacing:0}
+.ix p{margin:0;font-size:14.5px}
+.disclaimer{font-size:13px;color:var(--muted);margin:0}
+.inline-form{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr) auto;gap:8px}
+@media (max-width:520px){.inline-form{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.inline-form .wide{grid-column:1/-1}}
+
+/* Chat */
+.chat{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.msg{max-width:88%;padding:12px 14px;border-radius:16px;font-size:15.5px;overflow-wrap:anywhere}
+.msg.u{justify-self:end;background:var(--ink);color:var(--bg);border-bottom-right-radius:4px}
+.msg.a{justify-self:start;background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:4px}
+.msg.a p{margin:0 0 8px}.msg.a p:last-child{margin:0}
+.msg.a ul{margin:4px 0 8px;padding-left:20px}
+.suggest{display:flex;gap:8px;flex-wrap:wrap}
+.suggest button{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 14px;font-size:14px;text-align:left}
+body.typing .nav,body.typing .fab{display:none}
+body.typing .composer{bottom:env(safe-area-inset-bottom,0px)}
+.composer{display:flex;gap:8px;position:sticky;bottom:calc(76px + env(safe-area-inset-bottom,0px));background:var(--bg);padding-block:8px}
+.composer textarea{flex:1;min-width:0;resize:none;border:1.5px solid var(--line);background:var(--surface);border-radius:14px;padding:11px 14px;min-height:48px;max-height:140px}
+
+/* Bottom nav + FAB */
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:25;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+.nav-in{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+.nav button{border:0;background:none;display:grid;justify-items:center;gap:2px;padding:9px 4px 10px;font-size:12.5px;font-weight:700;color:var(--muted);min-height:62px}
+.nav button[aria-current="page"]{color:var(--accent)}
+.nav button[aria-current="page"] svg{transform:translateY(-1px)}
+.fab{position:fixed;z-index:26;right:max(16px,calc(env(safe-area-inset-right,0px) + 16px));bottom:calc(78px + env(safe-area-inset-bottom,0px));border:0;border-radius:16px;background:var(--accent);color:var(--accent-ink);font-weight:700;padding:14px 18px;display:flex;gap:8px;align-items:center;box-shadow:var(--shadow);min-height:52px}
+@media (min-width:760px){.fab{right:calc(50% - 344px)}}
+
+/* Sheet */
+.scrim{position:fixed;inset:0;z-index:40;background:rgba(10,18,20,.45);display:flex;align-items:flex-end;justify-content:center}
+.sheet{overscroll-behavior:contain;-webkit-overflow-scrolling:touch;background:var(--bg);width:100%;max-width:720px;max-height:calc(100% - env(safe-area-inset-top,0px) - 24px);overflow-y:auto;border-radius:20px 20px 0 0;padding-block:8px calc(24px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:16px;align-content:start}
+.grab{width:44px;height:5px;border-radius:3px;background:var(--line);justify-self:center}
+.sheet-h{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.sheet-h h2{font-size:22px}
+.field{display:grid;gap:6px}
+.field label{font-size:13px;font-weight:700;color:var(--muted)}
+.field input,.field select,.field textarea,.inline-form input,.grid-in input{border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 12px;min-height:44px;width:100%;min-width:0}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.pick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tile{position:relative}
+.tile input[type=file]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0;z-index:1}
+.tile:focus-within{outline:2.5px solid var(--accent);outline-offset:2px}
+.pick button,.pick .tile{-webkit-tap-highlight-color:transparent;border:1.5px solid var(--line);background:var(--surface);border-radius:14px;padding:16px 14px;display:grid;gap:6px;text-align:left;cursor:pointer}
+.pick b{font-size:15.5px}
+.pick span{font-size:13px;color:var(--muted)}
+.pick svg{color:var(--accent)}
+.wa{background:var(--sunk);border-radius:14px;padding:14px;display:grid;gap:8px;font-size:14.5px}
+.wa ol{margin:0;padding-left:20px;display:grid;gap:4px}
+.grid-in{display:grid;gap:8px}
+.grid-in .r{display:grid;grid-template-columns:minmax(0,2.2fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) 40px;gap:6px;align-items:center}
+.grid-in .r.m{grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1.4fr) 40px}
+.grid-in input{min-height:44px;padding:8px 10px;font-size:16px}
+.grid-in .hdr{font-size:11.5px;color:var(--muted);font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+@media (max-width:520px){
+  .grid-in .r.hdr{display:none}
+  .grid-in .r{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 40px;grid-template-areas:"nm nm x" "va un un" "lo hi hi";background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px;gap:8px}
+  .grid-in .r.m{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 40px;grid-template-areas:"nm nm x" "do fr fr"}
+  .grid-in .r .nm{grid-area:nm}.grid-in .r .va{grid-area:va}.grid-in .r .un{grid-area:un}.grid-in .r .lo{grid-area:lo}.grid-in .r .hi{grid-area:hi}.grid-in .r .do{grid-area:do}.grid-in .r .fr{grid-area:fr}.grid-in .r .x{grid-area:x}
+  .grid-in .r input{background:var(--bg)}
+}
+.busy{display:flex;gap:12px;align-items:center;padding:20px;background:var(--surface);border-radius:14px;border:1px solid var(--line)}
+.spin{width:22px;height:22px;border-radius:50%;border:3px solid var(--accent-soft);border-top-color:var(--accent);animation:sp 0.9s linear infinite;flex:none}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation-duration:3s}}
+.thumb{width:100%;max-height:340px;object-fit:contain;border-radius:12px;background:var(--sunk)}
+.note{font-size:14px;padding:10px 12px;border-radius:10px;background:var(--sunk)}
+.vh{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;clip:rect(0 0 0 0);left:0;bottom:0}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(150px + env(safe-area-inset-bottom,0px));z-index:60;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:700;font-size:14px;box-shadow:var(--shadow);max-width:calc(100% - 32px)}
+.swatches{display:flex;gap:10px}
+.swatches button{width:36px;height:36px;border-radius:50%;border:3px solid transparent}
+.swatches button[aria-pressed="true"]{border-color:var(--ink)}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 4l9 6.5"/><path d="M5 9.5V20h14V9.5"/><path d="M12 11v6M9 14h6"/></svg>Parivar Health</h1>
+      <span class="row" style="gap:8px;flex-wrap:nowrap"><span class="sync" id="sync">On this device</span><button class="x" type="button" id="gear" hidden aria-label="Settings"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg></button></span>
+    </div>
+    <div class="members" id="members" role="toolbar" aria-label="Family members"></div>
+  </header>
+  <main id="main"></main>
+</div>
+
+<button class="fab" id="fab" type="button"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Add report</button>
+
+<nav class="nav" aria-label="Sections"><div class="nav-in" id="nav"></div></nav>
+<div id="layer"></div>
+
+
+<script>
+/* Android app bridge: AI calls go through the app to the Claude API with the user's own key. */
+(function(){
+  if(!window.AndroidBridge)return;
+  var KEYK="parivar-api-key";
+  function getKey(){try{return localStorage.getItem(KEYK)||""}catch(e){return""}}
+  function setKey(k){try{k?localStorage.setItem(KEYK,k):localStorage.removeItem(KEYK)}catch(e){}}
+  var pending={},seq=0;
+  window.__nativeReply=function(id,ok,body){var p=pending[id];if(!p)return;delete pending[id];ok?p.res(body):p.rej(body)};
+  function call(body){return new Promise(function(res,rej){var id=String(++seq);pending[id]={res:res,rej:rej};window.AndroidBridge.post(id,getKey(),JSON.stringify(body))})}
+  function b64(blob){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(String(r.result).split(",")[1])};r.onerror=rej;r.readAsDataURL(blob)})}
+  async function sample(input,opts){
+    opts=opts||{};
+    if(!getKey())throw {code:"no_key",message:"AI features need your Claude API key. Tap the gear icon at the top right to add it."};
+    var msgs=typeof input==="string"?[{role:"user",content:input}]:input.map(function(m){return {role:m.role,content:m.content}});
+    var imgs=opts.images?(opts.images instanceof Blob?[opts.images]:Array.from(opts.images)):[];
+    if(imgs.length){var last=msgs[msgs.length-1];var blocks=[];for(var i=0;i<imgs.length;i++){blocks.push({type:"image",source:{type:"base64",media_type:imgs[i].type||"image/jpeg",data:await b64(imgs[i])}})}blocks.push({type:"text",text:last.content});last.content=blocks}
+    var raw;
+    try{raw=await call({model:"claude-sonnet-5-5",max_tokens:4096,messages:msgs})}
+    catch(errBody){
+      var m="";try{m=JSON.parse(errBody).error.message}catch(e){m=String(errBody||"")}
+      if(/x-api-key|authentication|api key|invalid bearer/i.test(m))throw {code:"no_key",message:"Your Claude API key wasn't accepted. Check it in Settings (gear icon)."};
+      throw {code:"api_error",message:m||"Couldn't reach Claude. Check your internet connection."};
+    }
+    var j=JSON.parse(raw);var text=(j.content||[]).filter(function(c){return c.type==="text"}).map(function(c){return c.text}).join("");
+    if(opts.onText)opts.onText({text:text,delta:text});
+    return {text:text,truncated:j.stop_reason==="max_tokens",modelTierApplied:"default"};
+  }
+  sample.json=async function(input,opts){var r=await sample(input,opts);var t=r.text.trim().replace(/^```(?:json)?\s*/i,"").replace(/```\s*$/,"");var a=t.indexOf("{"),b=t.lastIndexOf("}");if(a>=0&&b>a)t=t.slice(a,b+1);return JSON.parse(t)};
+  sample.limits=async function(){return {maxPromptBytes:2000000,images:{maxCount:3,maxInputBytes:5000000,mediaTypes:["image/jpeg","image/png"]}}};
+  window.claude={use:async function(n){return n==="sample"?sample:null}};
+  window.__apk={getKey:getKey,setKey:setKey};
+})();
+</script>
+<script>
+(function(){
+"use strict";
+const KEY="parivar-health-v1";
+const S={items:{},sel:"all",tab:"records",param:null,chat:[],chatBusy:false,ixResult:null,ixFor:null,ixBusy:false,mode:"local",cloudReady:false};
+const Cap={db:null,user:null,coll:null,sample:null,sampleTried:false,assets:null,assetsTried:false,limits:null};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const MCOL=["--m1","--m2","--m3","--m4","--m5"];
+const ICON={
+  blood:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s6 6.6 6 11a6 6 0 0 1-12 0c0-4.4 6-11 6-11Z"/><path d="M9.5 15a2.5 2.5 0 0 0 2.5 2.5"/></svg>',
+  prescription:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="18" height="7" rx="3.5" transform="rotate(-35 12 12.5)"/><path d="m9.2 8.4 5.6 8"/></svg>',
+  other:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6v18h12V7z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg>',
+  x:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+  cam:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>',
+  pdf:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6v18h12V7z"/><path d="M14 3v4h4"/><path d="M8.5 16v-4h1.2a1.2 1.2 0 0 1 0 2.4H8.5M13 12v4h.8a1.6 1.6 0 0 0 1.6-1.6v-.8A1.6 1.6 0 0 0 13.8 12z"/></svg>',
+  pen:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg>'
+};
+const NAV=[
+  ["records","Records",'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h10l6 6v10H4z"/><path d="M14 4v6h6M8 14h8M8 17h5"/></svg>'],
+  ["trends","Lab trends",'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18"/><path d="m4 15 5-5 4 3 7-7"/><path d="M15 6h5v5"/></svg>'],
+  ["meds","Medicines",'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="18" height="7" rx="3.5" transform="rotate(-35 12 12.5)"/><path d="m9.2 8.4 5.6 8"/></svg>'],
+  ["ask","Ask",'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/><path d="M9.5 10a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5M12 16.5v.01"/></svg>']
+];
+
+/* ---------- data helpers ---------- */
+const all=k=>Object.values(S.items).filter(d=>d.kind===k);
+const members=()=>all("member").sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+const member=id=>S.items[id];
+const mColor=m=>`var(${MCOL[(m&&m.color)||0]})`;
+const initials=n=>(n||"?").trim().split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase();
+const records=mid=>all("record").filter(r=>!mid||mid==="all"||r.memberId===mid).sort((a,b)=>(b.date||"").localeCompare(a.date||"")||(b.createdAt||0)-(a.createdAt||0));
+const meds=mid=>all("med").filter(r=>!mid||mid==="all"||r.memberId===mid).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+const hasExamples=()=>Object.values(S.items).some(d=>d.example);
+const fmtDate=d=>{if(!d)return"No date";const t=new Date(d+"T00:00:00");return isNaN(t)?d:t.toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"})};
+const fmtShort=d=>{const t=new Date(d+"T00:00:00");return isNaN(t)?d:t.toLocaleDateString("en-IN",{month:"short",year:"2-digit"})};
+const toNum=v=>{if(v===null||v===undefined||v==="")return null;const n=parseFloat(String(v).replace(/,/g,""));return isFinite(n)?n:null};
+function flagOf(r){const v=toNum(r.value),lo=toNum(r.low),hi=toNum(r.high);if(v===null)return"";if(lo!==null&&v<lo)return"L";if(hi!==null&&v>hi)return"H";return""}
+const ALIAS={glycatedhemoglobin:"hba1c",glycatedhaemoglobin:"hba1c",hemoglobina1c:"hba1c",glycosylatedhemoglobin:"hba1c",glycosylatedhaemoglobin:"hba1c",hba1cglycatedhaemoglobin:"hba1c",fbs:"fastingbloodsugar",fastingglucose:"fastingbloodsugar",fastingplasmaglucose:"fastingbloodsugar",glucosefasting:"fastingbloodsugar",bloodsugarfasting:"fastingbloodsugar",ppbs:"postprandialbloodsugar",haemoglobin:"hemoglobin",hb:"hemoglobin",hgb:"hemoglobin",ldl:"ldlcholesterol",ldlc:"ldlcholesterol",cholesterolldl:"ldlcholesterol",hdl:"hdlcholesterol",cholesterolhdl:"hdlcholesterol",vitd:"vitamind",vitamind3:"vitamind",vitamind25oh:"vitamind","25ohvitamind":"vitamind",vitamind25hydroxy:"vitamind","25hydroxyvitamind":"vitamind",serumcreatinine:"creatinine",creatinineserum:"creatinine",thyroidstimulatinghormone:"tsh",tshultrasensitive:"tsh",serumcalcium:"calcium",calciumserum:"calcium",vitaminb12:"vitb12",cyanocobalamin:"vitb12",totalcholesterol:"cholesterol",cholesteroltotal:"cholesterol",tg:"triglycerides",serumuricacid:"uricacid"};
+const pkey=n=>{const k=String(n||"").toLowerCase().replace(/[^a-z0-9]/g,"");return ALIAS[k]||k};
+
+/* ---------- storage ---------- */
+function loadLocal(){try{const r=localStorage.getItem(KEY);if(r)S.items=JSON.parse(r)||{}}catch(e){}}
+function saveLocal(){if(S.mode!=="local")return;try{localStorage.setItem(KEY,JSON.stringify(S.items))}catch(e){}}
+function clean(o){return JSON.parse(JSON.stringify(o))}
+let put=async function(doc){
+  S.items[doc.id]=doc;render();
+  if(S.mode==="cloud"){const {id,...rest}=doc;try{await Cap.coll.doc(id).set(clean(rest))}catch(e){toast("Couldn't save to your account. Check your connection and try again.")}}
+  else saveLocal();
+};
+async function removeDoc(id){
+  delete S.items[id];render();
+  if(S.mode==="cloud"){try{await Cap.coll.doc(id).delete()}catch(e){toast("Couldn't delete. Try again.")}}
+  else saveLocal();
+}
+async function putMany(docs){for(const d of docs)S.items[d.id]=d;render();if(S.mode==="cloud"){for(const d of docs){const {id,...rest}=d;try{await Cap.coll.doc(id).set(clean(rest))}catch(e){}}}else saveLocal()}
+
+async function initCloud(){
+  if(!window.claude||typeof window.claude.use!=="function")return;
+  try{
+    const [db,user]=await Promise.all([window.claude.use("db"),window.claude.use("user")]);
+    if(!db||!user)return;
+    const id=await user.id();if(!id)return;
+    Cap.db=db;Cap.user=user;Cap.coll=db.collection("data/users/"+id);
+    const localItems={...S.items};
+    let first=true;
+    Cap.coll.onSnapshot(snap=>{
+      const next={};snap.docs.forEach(d=>{const v=d.data();if(v)next[d.id]={id:d.id,...v}});
+      if(first){first=false;S.mode="cloud";
+        if(snap.empty&&Object.keys(localItems).length){S.items=localItems;putMany(Object.values(localItems));}
+        else S.items=next;
+      } else S.items=next;
+      S.cloudReady=true;render();
+    },()=>{S.mode="local";render()});
+  }catch(e){}
+}
+async function getSample(){
+  if(Cap.sampleTried)return Cap.sample;Cap.sampleTried=true;
+  try{if(window.claude&&window.claude.use){Cap.sample=await window.claude.use("sample");if(Cap.sample){try{Cap.limits=await Cap.sample.limits()}catch(e){}}}}catch(e){Cap.sample=null}
+  return Cap.sample;
+}
+async function getAssets(){
+  if(Cap.assetsTried)return Cap.assets;Cap.assetsTried=true;
+  try{if(window.claude&&window.claude.use)Cap.assets=await window.claude.use("assets")}catch(e){Cap.assets=null}
+  return Cap.assets;
+}
+
+/* ---------- examples ---------- */
+function exampleDocs(){
+  const t=Date.now(),D=[];
+  const fa={id:"ex-fa",kind:"member",name:"Ramesh",relation:"Father",age:"62",color:0,createdAt:t,example:true};
+  const mo={id:"ex-mo",kind:"member",name:"Sunita",relation:"Mother",age:"58",color:1,createdAt:t+1,example:true};
+  const me={id:"ex-me",kind:"member",name:"Me",relation:"Self",age:"31",color:2,createdAt:t+2,example:true};
+  D.push(fa,mo,me);
+  const R=(n,v,u,lo,hi)=>({name:n,value:v,unit:u,low:lo,high:hi});
+  const fr=[["2025-11-12",[13.6,7.8,148,142,1.1,18]],["2026-03-18",[13.9,7.2,132,118,1.2,null]],["2026-08-22",[14.1,6.6,118,96,1.3,32]]];
+  fr.forEach(([d,v],i)=>{const res=[R("Haemoglobin",v[0],"g/dL",13,17),R("HbA1c",v[1],"%",4,5.6),R("Fasting Blood Sugar",v[2],"mg/dL",70,100),R("LDL Cholesterol",v[3],"mg/dL",0,100),R("Creatinine",v[4],"mg/dL",0.7,1.3)];if(v[5]!==null)res.push(R("Vitamin D",v[5],"ng/mL",30,100));
+    D.push({id:"ex-fr"+i,kind:"record",memberId:fa.id,type:"blood",title:"Diabetes & lipid profile",date:d,lab:"City Diagnostics",results:res,medicines:[],notes:"",createdAt:t+10+i,example:true})});
+  [["2026-01-10",[6.8,11.2,8.9,14]],["2026-07-05",[3.1,11.9,9.3,26]]].forEach(([d,v],i)=>{
+    D.push({id:"ex-mr"+i,kind:"record",memberId:mo.id,type:"blood",title:"Thyroid & anaemia panel",date:d,lab:"Metro Path Labs",results:[R("TSH",v[0],"µIU/mL",0.4,4.5),R("Haemoglobin",v[1],"g/dL",12,15.5),R("Calcium",v[2],"mg/dL",8.5,10.5),R("Vitamin D",v[3],"ng/mL",30,100)],medicines:[],notes:"",createdAt:t+20+i,example:true})});
+  const fm=[["Metformin 500","500 mg","Twice daily after meals"],["Atorvastatin","10 mg","Once at night"],["Telmisartan","40 mg","Once in the morning"],["Ecosprin (Aspirin)","75 mg","Once after lunch"],["Brufen (Ibuprofen)","400 mg","When needed for knee pain"]];
+  D.push({id:"ex-frx",kind:"record",memberId:fa.id,type:"prescription",title:"Follow-up, Dr. Iyer (Diabetologist)",date:"2026-03-18",lab:"",results:[],medicines:fm.map(([n,d,f])=>({name:n,dose:d,frequency:f})),notes:"Review HbA1c in 3 months.",createdAt:t+30,example:true});
+  fm.forEach(([n,d,f],i)=>D.push({id:"ex-fm"+i,kind:"med",memberId:fa.id,name:n,dose:d,frequency:f,createdAt:t+40+i,example:true}));
+  const mm=[["Thyronorm (Levothyroxine)","50 mcg","Empty stomach, early morning"],["Shelcal (Calcium + D3)","500 mg","Once after breakfast"]];
+  D.push({id:"ex-mrx",kind:"record",memberId:mo.id,type:"prescription",title:"Thyroid review, Dr. Mehta",date:"2026-01-10",lab:"",results:[],medicines:mm.map(([n,d,f])=>({name:n,dose:d,frequency:f})),notes:"",createdAt:t+50,example:true});
+  mm.forEach(([n,d,f],i)=>D.push({id:"ex-mm"+i,kind:"med",memberId:mo.id,name:n,dose:d,frequency:f,createdAt:t+60+i,example:true}));
+  return D;
+}
+async function clearExamples(){
+  const ids=Object.values(S.items).filter(d=>d.example).map(d=>d.id);
+  for(const id of ids)delete S.items[id];
+  if(S.items[S.sel]===undefined)S.sel="all";
+  render();
+  if(S.mode==="cloud"){for(const id of ids){try{await Cap.coll.doc(id).delete()}catch(e){}}}else saveLocal();
+  toast("Example data removed");
+}
+
+/* ---------- interactions (offline reference list) ---------- */
+const DRUG={aspirin:["aspirin","ecosprin","disprin","loprin","acetylsalicylic"],warfarin:["warfarin","warf","acitrom","acenocoumarol"],clopidogrel:["clopidogrel","clopilet","deplatt","plavix"],levothyroxine:["levothyroxine","thyronorm","eltroxin","thyrox","lethyrox"],calcium:["calcium","shelcal","calcimax","ccm","cipcal"],iron:["iron","ferrous","livogen","dexorange","orofer","autrin"],antacid:["antacid","digene","gelusil","mucaine"],atorvastatin:["atorvastatin","atorva","lipitor","storvas"],simvastatin:["simvastatin"],clarithromycin:["clarithromycin","claribid"],nsaid:["ibuprofen","brufen","combiflam","diclofenac","voveran","naproxen","aceclofenac","zerodol","hifenac"],arb:["telmisartan","telma","losartan","losar","olmesartan","olmezest","valsartan","ramipril","cardace","enalapril"],potassium:["spironolactone","aldactone","potassium"],sildenafil:["sildenafil","tadalafil","viagra","cialis"],nitrate:["isosorbide","sorbitrate","nitroglycerin","nitrocontin","monotrate"],cipro:["ciprofloxacin","ciplox","levofloxacin","levoflox","ofloxacin"],ppi:["omeprazole","omez","esomeprazole"],metformin:["metformin","glycomet","glucophage","gluconorm"]};
+const RULES=[
+  ["aspirin","warfarin","major","Higher risk of serious bleeding.","Use together only if a doctor has specifically advised it; watch for unusual bruising or black stools."],
+  ["nsaid","warfarin","major","Painkillers like ibuprofen raise bleeding risk with blood thinners.","Ask the doctor for a safer painkiller, such as paracetamol."],
+  ["sildenafil","nitrate","major","Can cause a dangerous drop in blood pressure.","Do not take together. Tell the doctor about both medicines."],
+  ["atorvastatin","clarithromycin","major","Raises statin levels, increasing the risk of muscle damage.","The doctor may pause the statin during the antibiotic course."],
+  ["simvastatin","clarithromycin","major","Raises statin levels, increasing the risk of muscle damage.","The doctor may pause the statin during the antibiotic course."],
+  ["aspirin","clopidogrel","moderate","Combined effect raises bleeding risk.","Often prescribed together on purpose after heart events; keep taking as prescribed and report any bleeding."],
+  ["nsaid","aspirin","moderate","Raises stomach bleeding risk and can blunt aspirin's heart protection.","Avoid regular use of the painkiller; ask about paracetamol instead."],
+  ["nsaid","arb","moderate","Can reduce the blood-pressure effect and strain the kidneys.","Limit painkiller use and keep an eye on creatinine in blood reports."],
+  ["arb","potassium","moderate","Can raise potassium to unsafe levels.","Potassium should be checked in blood tests."],
+  ["levothyroxine","calcium","moderate","Calcium reduces absorption of the thyroid tablet.","Take the thyroid tablet on an empty stomach and keep calcium at least 4 hours apart."],
+  ["levothyroxine","iron","moderate","Iron reduces absorption of the thyroid tablet.","Keep them at least 4 hours apart."],
+  ["levothyroxine","antacid","moderate","Antacids reduce absorption of the thyroid tablet.","Keep them at least 4 hours apart."],
+  ["cipro","calcium","moderate","Calcium blocks absorption of the antibiotic.","Take the antibiotic 2 hours before or 6 hours after calcium."],
+  ["cipro","antacid","moderate","Antacids block absorption of the antibiotic.","Take the antibiotic 2 hours before or 6 hours after the antacid."],
+  ["ppi","clopidogrel","moderate","Omeprazole can make clopidogrel work less well.","Ask whether pantoprazole would be a better choice."]
+];
+const classOf=n=>{const s=String(n||"").toLowerCase();return Object.keys(DRUG).filter(k=>DRUG[k].some(a=>s.includes(a)))};
+function localCheck(list){
+  const out=[];const cls=list.map(m=>({m,c:classOf(m.name)}));
+  for(let i=0;i<cls.length;i++)for(let j=i+1;j<cls.length;j++)for(const [a,b,sev,eff,adv] of RULES){
+    if((cls[i].c.includes(a)&&cls[j].c.includes(b))||(cls[i].c.includes(b)&&cls[j].c.includes(a)))out.push({drugs:[cls[i].m.name,cls[j].m.name],severity:sev,effect:eff,advice:adv});
+  }
+  return out;
+}
+
+/* ---------- rendering ---------- */
+function renderMembers(){
+  const ms=members();
+  let h=`<button class="chip" type="button" data-sel="all" aria-pressed="${S.sel==="all"}"><span class="av" style="background:var(--muted)">All</span>Family</button>`;
+  h+=ms.map(m=>`<button class="chip" type="button" data-sel="${esc(m.id)}" aria-pressed="${S.sel===m.id}"><span class="av" style="background:${mColor(m)}">${esc(initials(m.name))}</span>${esc(m.name)}</button>`).join("");
+  h+=`<button class="chip add" type="button" data-act="add-member">+ Add member</button>`;
+  $("#members").innerHTML=h;
+}
+function renderNav(){
+  $("#nav").innerHTML=NAV.map(([k,l,i])=>`<button type="button" data-tab="${k}" ${S.tab===k?'aria-current="page"':""}>${i}<span>${l}</span></button>`).join("");
+  $("#fab").hidden=S.tab==="ask";
+}
+function renderSync(){
+  const el=$("#sync");
+  if(S.mode==="cloud"){el.textContent="Saved to your account";el.className="sync cloud"}
+  else{el.textContent="On this device";el.className="sync"}
+}
+function exBanner(){return hasExamples()?`<div class="banner"><span>You're looking at example records.</span><button type="button" data-act="clear-ex">Remove examples</button></div>`:""}
+function emptyStart(){
+  return `<div class="card empty">
+    <h2>Start your family's health file</h2>
+    <p>Add each family member, then upload their blood reports and prescriptions. Values are read automatically so you can follow them over time.</p>
+    <div class="row" style="justify-content:center"><button class="btn" type="button" data-act="add-member">Add a family member</button><button class="btn ghost" type="button" data-act="load-ex">Try with example family</button></div>
+  </div>`;
+}
+function selName(){return S.sel==="all"?"the family":(member(S.sel)?.name||"")}
+
+function viewRecords(){
+  if(!members().length)return emptyStart();
+  const recs=records(S.sel);
+  const blood=recs.filter(r=>r.type==="blood");
+  const latest=blood[0];
+  const flagged=latest?(latest.results||[]).filter(flagOf).length:0;
+  let h=exBanner();
+  let mid;
+  if(S.sel==="all"){const n=members().filter(m=>{const b=records(m.id).find(r=>r.type==="blood");return b&&(b.results||[]).some(flagOf)}).length;
+    mid=`<div><span>Flagged now</span><b class="num" style="color:${n?"var(--high)":"var(--ink)"}">${n} ${n===1?"person":"people"}</b></div>`}
+  else mid=`<div><span>Flagged now</span><b class="num" style="color:${flagged?"var(--high)":"var(--ink)"}">${latest?flagged:"—"}</b></div>`;
+  h+=`<div class="summary">
+    <div><span>Reports</span><b class="num">${recs.length}</b></div>
+    ${mid}
+    <div><span>Medicines</span><b class="num">${meds(S.sel).length}</b></div>
+  </div>`;
+  h+=`<div class="section-h"><h2>${S.sel==="all"?"All records":esc(member(S.sel)?.name)+"'s records"}</h2>${S.sel==="all"?'<span class="muted" style="font-size:14px">Newest first</span>':`<button class="btn ghost small" type="button" data-act="edit-member" aria-label="Edit ${esc(member(S.sel)?.name)}">Edit</button>`}</div>`;
+  if(!recs.length){
+    h+=`<div class="card empty"><h2>No reports yet</h2><p>Upload a photo or PDF of a blood report or prescription for ${esc(selName())}.</p><button class="btn" type="button" data-act="add-report">Add report</button></div>`;
+    return h;
+  }
+  h+=`<div class="list">`+recs.map(r=>{
+    const m=member(r.memberId);const f=(r.results||[]);const hi=f.filter(x=>flagOf(x)==="H").length,lo=f.filter(x=>flagOf(x)==="L").length;
+    const ic=r.type==="blood"?"":r.type==="prescription"?"rx":"doc";
+    let tag="";
+    if(r.type==="blood")tag=hi||lo?`<span class="pill h">${hi+lo} flagged</span>`:`<span class="pill ok">All normal</span>`;
+    else if(r.type==="prescription")tag=`<span class="pill n">${(r.medicines||[]).length} meds</span>`;
+    return `<button class="rec" type="button" data-open="${esc(r.id)}"><span class="ic ${ic}">${ICON[r.type]||ICON.other}</span><span style="min-width:0"><h3>${esc(r.title||"Untitled")}</h3><p>${S.sel==="all"&&m?esc(m.name)+" · ":""}${fmtDate(r.date)}${r.lab?" · "+esc(r.lab):""}</p></span>${tag}</button>`;
+  }).join("")+`</div>`;
+  return h;
+}
+
+function trendData(mid){
+  const blood=records(mid).filter(r=>r.type==="blood"&&r.date).sort((a,b)=>a.date.localeCompare(b.date));
+  const dates=[...new Set(blood.map(r=>r.date))];
+  const P={};
+  blood.forEach(r=>(r.results||[]).forEach(x=>{const v=toNum(x.value);if(v===null)return;const k=pkey(x.name);if(!k)return;
+    (P[k]=P[k]||{key:k,name:x.name,unit:x.unit||"",pts:{}}).pts[r.date]={v,lo:toNum(x.low),hi:toNum(x.high),f:flagOf(x)};P[k].name=x.name;if(x.unit)P[k].unit=x.unit;}));
+  return {dates,params:Object.values(P).sort((a,b)=>a.name.localeCompare(b.name))};
+}
+function chartSVG(p,dates){
+  const pts=dates.filter(d=>p.pts[d]).map(d=>({d,t:new Date(d+"T00:00:00").getTime(),...p.pts[d]}));
+  const W=340,H=200,L=44,R=18,T=22,B=30;
+  const last=pts[pts.length-1];const lo=last.lo,hi=last.hi;
+  let ymin=Math.min(...pts.map(p=>p.v)),ymax=Math.max(...pts.map(p=>p.v));
+  if(lo!==null&&lo>0)ymin=Math.min(ymin,lo);if(hi!==null)ymax=Math.max(ymax,hi);
+  const pad=(ymax-ymin||Math.abs(ymax)||1)*0.18;ymin=Math.max(0,ymin-pad);ymax=ymax+pad;
+  const t0=pts[0].t,t1=pts[pts.length-1].t;
+  const x=t=>pts.length===1?(L+(W-L-R)/2):L+(t-t0)/(t1-t0)*(W-L-R);
+  const y=v=>T+(1-(v-ymin)/(ymax-ymin))*(H-T-B);
+  const ticks=[];const step=niceStep((ymax-ymin)/4);for(let v=Math.ceil(ymin/step)*step;v<=ymax+1e-9;v+=step)ticks.push(+v.toFixed(6));
+  const dec=step<1?(step<0.1?2:1):0;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(p.name)} over time">`;
+  if(lo!==null||hi!==null){const yt=y(hi!==null?Math.min(hi,ymax):ymax),yb=y(lo!==null?Math.max(lo,ymin):ymin);s+=`<rect x="${L}" y="${yt}" width="${W-L-R}" height="${Math.max(0,yb-yt)}" fill="var(--ok-soft)"/>`;
+    s+=`<text x="${W-R}" y="${yt+12}" text-anchor="end" font-size="10" fill="var(--ok)" font-family="var(--f-body)" font-weight="700">Normal range</text>`}
+  ticks.forEach(v=>{s+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1"/><text x="${L-6}" y="${y(v)+3.5}" text-anchor="end" font-size="10" fill="var(--muted)" font-family="var(--f-data)">${v.toFixed(dec)}</text>`});
+  if(pts.length>1){s+=`<path d="${pts.map((p,i)=>(i?"L":"M")+x(p.t).toFixed(1)+" "+y(p.v).toFixed(1)).join(" ")}" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/>`}
+  pts.forEach((p,i)=>{const c=p.f==="H"?"var(--high)":p.f==="L"?"var(--low)":"var(--ok)";const isL=i===pts.length-1;
+    s+=`<circle cx="${x(p.t)}" cy="${y(p.v)}" r="${isL?6.5:4.5}" fill="${c}" stroke="var(--surface)" stroke-width="2"/>`;
+    const lx=Math.min(W-R-2,Math.max(L+12,x(p.t)));
+    s+=`<text x="${lx}" y="${y(p.v)-11}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--ink)" font-family="var(--f-data)">${p.v}</text>`;
+    if(pts.length<=6||i===0||isL)s+=`<text x="${lx}" y="${H-10}" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="var(--f-body)">${esc(fmtShort(p.d))}</text>`;
+  });
+  return s+`</svg>`;
+}
+function niceStep(r){if(r<=0)return 1;const p=Math.pow(10,Math.floor(Math.log10(r)));const n=r/p;return (n<1.5?1:n<3?2:n<7?5:10)*p}
+function viewTrends(){
+  if(!members().length)return emptyStart();
+  let h=exBanner();
+  if(S.sel==="all"){
+    return h+`<div class="card empty"><h2>Pick a family member</h2><p>Lab trends compare one person's reports across dates. Choose who to look at.</p><div class="row" style="justify-content:center">${members().map(m=>`<button class="chip" type="button" data-sel="${esc(m.id)}" aria-pressed="false"><span class="av" style="background:${mColor(m)}">${esc(initials(m.name))}</span>${esc(m.name)}</button>`).join("")}</div></div>`;
+  }
+  const {dates,params}=trendData(S.sel);
+  if(!params.length)return h+`<div class="card empty"><h2>No lab values yet</h2><p>Add blood reports for ${esc(selName())}. Once there are two or more dates, changes show up here.</p><button class="btn" type="button" data-act="add-report">Add blood report</button></div>`;
+  let p=params.find(x=>x.key===S.param);
+  if(!p){p=params.find(x=>Object.values(x.pts).some(v=>v.f))||params[0];S.param=p.key}
+  const pd=dates.filter(d=>p.pts[d]);const last=p.pts[pd[pd.length-1]],first=p.pts[pd[0]];
+  const diff=pd.length>1?last.v-first.v:null;
+  const st=last.f==="H"?'<span class="pill h">Above range</span>':last.f==="L"?'<span class="pill l">Below range</span>':'<span class="pill ok">In range</span>';
+  h+=`<div class="card chart" style="display:grid;gap:10px">
+    <div class="chart-head"><div style="display:grid;gap:4px"><span class="label">${esc(member(S.sel)?.name)} · ${pd.length} reading${pd.length>1?"s":""}</span><h2>${esc(p.name)}</h2></div>
+    <div style="text-align:right;display:grid;gap:6px;justify-items:end"><span class="big">${last.v} <span style="font-size:14px;color:var(--muted)">${esc(p.unit)}</span></span>${st}</div></div>
+    ${chartSVG(p,dates)}
+    <p class="disclaimer">${diff!==null?`${diff>0?"Up":"Down"} <span class="num">${Math.abs(+diff.toFixed(2))} ${esc(p.unit)}</span> since ${fmtDate(pd[0])}. `:"Only one reading so far. "}${last.lo!==null||last.hi!==null?`Lab's reference range: <span class="num">${last.lo??"–"}–${last.hi??"–"} ${esc(p.unit)}</span>.`:""}</p>
+  </div>`;
+  h+=`<div class="section-h"><h2>Compare all values</h2><span class="muted" style="font-size:14px">Tap a row to chart it</span></div>`;
+  h+=`<div class="tablewrap"><table><thead><tr><th class="pn">Test</th>${dates.map(d=>`<th style="text-align:right">${esc(fmtShort(d))}</th>`).join("")}<th style="text-align:right">Change</th></tr></thead><tbody>`;
+  h+=params.map(q=>{const qd=dates.filter(d=>q.pts[d]);const ch=qd.length>1?q.pts[qd[qd.length-1]].v-q.pts[qd[0]].v:null;
+    return `<tr class="clickable ${q.key===p.key?"sel":""}" data-param="${esc(q.key)}" tabindex="0"><td class="pn">${esc(q.name)}<div class="ref">${esc(q.unit)}</div></td>${dates.map(d=>{const c=q.pts[d];return c?`<td class="v ${c.f==="H"?"h":c.f==="L"?"l":""}">${c.v}${c.f?" "+c.f:""}</td>`:`<td class="v muted">–</td>`}).join("")}<td class="v">${ch===null?"–":(ch>0?"▲ ":ch<0?"▼ ":"")+Math.abs(+ch.toFixed(2))}</td></tr>`}).join("");
+  h+=`</tbody></table></div><p class="disclaimer"><b style="color:var(--high)">H</b> above and <b style="color:var(--low)">L</b> below the lab's reference range. Ranges differ between labs; your doctor interprets what a change means.</p>`;
+  return h;
+}
+
+function viewMeds(){
+  if(!members().length)return emptyStart();
+  let h=exBanner();
+  const ms=S.sel==="all"?members():[member(S.sel)].filter(Boolean);
+  ms.forEach(m=>{
+    const list=meds(m.id);
+    h+=`<div class="card" style="display:grid;gap:10px">
+      <div class="section-h"><h2 style="display:flex;gap:10px;align-items:center"><span class="av" style="background:${mColor(m)}">${esc(initials(m.name))}</span>${esc(m.name)}</h2><span class="muted num" style="font-size:14px">${list.length} current</span></div>
+      <div>${list.length?list.map(x=>`<div class="med"><div style="min-width:0"><b>${esc(x.name)}</b>${x.dose?` <span class="num muted" style="font-size:14px">${esc(x.dose)}</span>`:""}<p>${esc(x.frequency||"")}</p></div><button class="x" type="button" data-delmed="${esc(x.id)}" aria-label="Stop ${esc(x.name)}">${ICON.x}</button></div>`).join(""):`<p class="muted" style="margin:0">No current medicines.</p>`}</div>
+      <form class="inline-form" data-addmed="${esc(m.id)}"><input class="wide" name="name" placeholder="Medicine name" aria-label="Medicine name" required id="mn-${esc(m.id)}"><input name="dose" placeholder="Dose" aria-label="Dose" id="md-${esc(m.id)}"><input name="freq" placeholder="When" aria-label="When to take" id="mf-${esc(m.id)}"><button class="btn small quiet" type="submit">Add</button></form>
+      <button class="btn" type="button" data-ix="${esc(m.id)}" ${list.length<2||S.ixBusy?"disabled":""}>${S.ixBusy&&S.ixFor===m.id?'<span class="spin" style="width:18px;height:18px;border-width:2.5px"></span> Checking…':"Check interactions"}</button>
+      ${S.ixFor===m.id&&S.ixResult?renderIx(S.ixResult):""}
+    </div>`;
+  });
+  h+=`<p class="disclaimer">Interaction checks are a prompt for a conversation with your doctor or pharmacist, not medical advice. Never stop or change a prescribed medicine on your own.</p>`;
+  return h;
+}
+function renderIx(r){
+  const sevOrder={major:0,moderate:1,minor:2};
+  const list=(r.items||[]).slice().sort((a,b)=>(sevOrder[a.severity]??3)-(sevOrder[b.severity]??3));
+  let h=`<div style="display:grid;gap:10px"><span class="label">${r.source==="ai"?"AI check":"Built-in reference list"} · ${list.length?list.length+" found":"none found"}</span>`;
+  if(!list.length)h+=`<div class="ix minor"><h3>No interactions found</h3><p>${r.source==="ai"?"None of the common interactions apply to these medicines.":"None of the interactions in the built-in list match. The AI check covers far more medicines when it's available."}</p></div>`;
+  h+=list.map(x=>`<div class="ix ${esc(x.severity)}"><div class="row" style="justify-content:space-between"><h3>${esc((x.drugs||[]).join(" + "))}</h3><span class="pill ${x.severity==="major"?"h":x.severity==="moderate"?"ex":"l"}">${esc(x.severity)}</span></div><p>${esc(x.effect)}</p>${x.advice?`<p class="muted">${esc(x.advice)}</p>`:""}</div>`).join("");
+  if(r.note)h+=`<p class="disclaimer">${esc(r.note)}</p>`;
+  return h+`</div>`;
+}
+
+function mdLite(t){
+  const lines=esc(t).split(/\n/);let h="",inList=false;
+  for(const ln of lines){const b=ln.replace(/\*\*(.+?)\*\*/g,"<b>$1</b>");
+    if(/^\s*[-*•]\s+/.test(ln)){if(!inList){h+="<ul>";inList=true}h+="<li>"+b.replace(/^\s*[-*•]\s+/,"")+"</li>"}
+    else{if(inList){h+="</ul>";inList=false}if(b.trim())h+="<p>"+b+"</p>"}}
+  if(inList)h+="</ul>";return h;
+}
+function viewAsk(){
+  if(!members().length)return emptyStart();
+  const m=S.sel==="all"?null:member(S.sel);
+  const fa=members()[0];
+  const sug=m?[`How has ${m.name}'s report changed over time?`,`Which of ${m.name}'s values are out of range?`,`What medicines is ${m.name} taking and why?`]:[`Who in the family has values out of range?`,`List everyone's current medicines`,`Summarise ${fa.name}'s latest blood report in simple words`];
+  let h=exBanner();
+  h+=`<div class="card" style="display:grid;gap:8px"><span class="label">Ask about ${esc(m?m.name+"'s":"the family's")} records</span><p class="disclaimer" style="margin:0">Answers come only from the reports and medicines saved here. You can ask in Hindi too. This is for understanding, not diagnosis.</p></div>`;
+  h+=`<div class="chat" id="chat">`;
+  if(!S.chat.length)h+=`<div class="suggest">${sug.map(q=>`<button type="button" data-q="${esc(q)}">${esc(q)}</button>`).join("")}</div>`;
+  h+=S.chat.map(c=>`<div class="msg ${c.role==="user"?"u":"a"}">${c.role==="user"?esc(c.content):(c.content?mdLite(c.content):'<span class="row"><span class="spin" style="width:18px;height:18px;border-width:2.5px"></span><span class="muted">Reading the records…</span></span>')}</div>`).join("");
+  h+=`</div><form class="composer" id="askForm"><textarea id="askIn" rows="1" placeholder="Ask a question…" aria-label="Your question"></textarea><button class="btn" type="submit" ${S.chatBusy?"disabled":""} aria-label="Send">Send</button></form>`;
+  return h;
+}
+
+function render(){
+  renderMembers();renderNav();renderSync();
+  if(S.sel!=="all"&&!member(S.sel))S.sel="all";
+  const v={records:viewRecords,trends:viewTrends,meds:viewMeds,ask:viewAsk}[S.tab]();
+  const ta=$("#askIn");const draft=ta?ta.value:"";const hadFocus=document.activeElement===ta;
+  $("#main").innerHTML=`<div class="view">${v}</div>`;
+  const nta=$("#askIn");if(nta){nta.value=draft;if(hadFocus)nta.focus()}
+}
+
+/* ---------- sheets ---------- */
+function openSheet(html,onMount){
+  $("#layer").innerHTML=`<div class="scrim" id="scrim"><div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div></div>`;
+  $("#scrim").addEventListener("click",e=>{if(e.target.id==="scrim")closeSheet()});
+  document.body.style.overflow="hidden";
+  onMount&&onMount($("#scrim .sheet"));
+}
+function closeSheet(){$("#layer").innerHTML="";document.body.style.overflow=""}
+const sheetHead=t=>`<div class="sheet-h"><h2>${esc(t)}</h2><button class="x" type="button" data-act="close" aria-label="Close">${ICON.x}</button></div>`;
+
+function memberSheet(existing){
+  let color=existing?existing.color||0:members().length%5;
+  openSheet(`${sheetHead(existing?"Edit member":"Add family member")}
+    <form id="mForm" style="display:grid;gap:14px">
+      <div class="field"><label for="mName">Name</label><input id="mName" required value="${esc(existing?.name||"")}" placeholder="e.g. Papa, Ramesh"></div>
+      <div class="two"><div class="field"><label for="mRel">Relation</label><select id="mRel">${["Self","Father","Mother","Spouse","Son","Daughter","Grandparent","Sibling","Other"].map(r=>`<option ${existing?.relation===r?"selected":""}>${r}</option>`).join("")}</select></div>
+      <div class="field"><label for="mAge">Age</label><input id="mAge" inputmode="numeric" value="${esc(existing?.age||"")}" placeholder="Years"></div></div>
+      <div class="field"><label>Colour</label><div class="swatches" id="sw">${MCOL.map((c,i)=>`<button type="button" data-c="${i}" aria-pressed="${i===color}" aria-label="Colour ${i+1}" style="background:var(${c})"></button>`).join("")}</div></div>
+      <div class="row"><button class="btn" type="submit">${existing?"Save":"Add member"}</button>${existing?`<button class="btn danger" type="button" id="mDel">Delete member…</button>`:""}</div>
+      <div id="mConfirm"></div>
+    </form>`,sh=>{
+      sh.querySelector("#sw").addEventListener("click",e=>{const b=e.target.closest("[data-c]");if(!b)return;color=+b.dataset.c;sh.querySelectorAll("#sw button").forEach(x=>x.setAttribute("aria-pressed",x===b))});
+      sh.querySelector("#mForm").addEventListener("submit",e=>{e.preventDefault();const name=sh.querySelector("#mName").value.trim();if(!name)return;
+        const doc={...(existing||{id:"m"+uid(),kind:"member",createdAt:Date.now()}),name,relation:sh.querySelector("#mRel").value,age:sh.querySelector("#mAge").value.trim(),color};
+        delete doc.example;if(existing&&existing.example)doc.example=true;
+        put(doc);S.sel=doc.id;closeSheet();render();toast(existing?"Saved":"Added "+name)});
+      const del=sh.querySelector("#mDel");
+      if(del)del.addEventListener("click",()=>{const n=records(existing.id).length+meds(existing.id).length;
+        sh.querySelector("#mConfirm").innerHTML=`<div class="note">This removes ${esc(existing.name)} and ${n} saved item${n===1?"":"s"}. <div class="row" style="margin-top:8px"><button class="btn danger small" type="button" id="mDel2">Yes, delete</button><button class="btn quiet small" type="button" data-act="close">Cancel</button></div></div>`;
+        sh.querySelector("#mDel2").addEventListener("click",async()=>{const ids=[existing.id,...records(existing.id).map(r=>r.id),...meds(existing.id).map(r=>r.id)];S.sel="all";closeSheet();for(const id of ids)await removeDoc(id);toast("Deleted")})});
+    });
+}
+
+function addSheet(){
+  if(!members().length){memberSheet();return}
+  openSheet(`${sheetHead("Add a report")}
+    <div class="pick">
+      <div class="tile">${ICON.cam}<b>Photo</b><span>Take a picture or pick from your gallery</span><input type="file" id="fileImg" accept="image/*" aria-label="Upload a photo of the report"></div>
+      <div class="tile">${ICON.pdf}<b>PDF file</b><span>Lab report PDF from your downloads or WhatsApp</span><input type="file" id="filePdf" accept="application/pdf,.pdf" aria-label="Upload a PDF report"></div>
+      <div class="tile">${ICON.other}<b>Other file</b><span>If the PDF button doesn't show your file</span><input type="file" id="fileAny" aria-label="Upload any file"></div>
+      <button type="button" data-act="manual">${ICON.pen}<b>Type it in</b><span>Enter values yourself</span></button>
+    </div>
+    <div class="wa"><b>Report came on WhatsApp?</b><ol><li>Open the chat and tap the report.</li><li>Tap Share.</li><li>Choose <b>Parivar Health</b> in the share list, or come back here and tap <b>PDF file</b>.</li></ol><span class="muted" style="font-size:13px">You can also paste a screenshot here (Ctrl/⌘+V on a computer).</span></div>
+    <p class="disclaimer">Shortcut: in WhatsApp, open the report, tap Share and choose Parivar Health. It opens here automatically.</p>`);
+}
+
+async function handleFile(file){
+  if(!file)return;
+  openSheet(`${sheetHead("Reading your report")}<div class="busy"><span class="spin"></span><div><b>Reading ${esc(file.name||"report")}…</b><div class="muted" style="font-size:14px">Finding the test names, values and reference ranges.</div></div></div>`);
+  let images=[],previewUrl=null,extracted=null,err="",text="";
+  const isPdf=await looksPdf(file);
+  try{
+    if(isPdf){const r=await Promise.race([readPdf(file),new Promise((_,rej)=>setTimeout(()=>rej(new Error("timeout")),25000))]);text=r.text;images=r.images}
+    else images=[await shrinkImage(file)];
+    if(images[0])previewUrl=URL.createObjectURL(images[0]);
+  }catch(e){err=isPdf?"Couldn't open this PDF here. It's still saved; enter the values below, or upload a screenshot of the report with the Photo button.":"Couldn't open this file. Try a clear photo (JPG/PNG) or a PDF."}
+  const sample=await getSample();
+  const useText=text.replace(/\s+/g," ").trim().length>150;
+  const canImg=sample&&Cap.limits&&Cap.limits.images&&images.length;
+  if(sample&&(useText||canImg)){
+    try{extracted=await extract(sample,useText?{text}:{images:images.slice(0,Math.min(images.length,Cap.limits.images.maxCount||3))})}
+    catch(e){err=e&&(e.code==="no_key"||e.code==="api_error")?e.message+" You can enter the values below.":e&&e.code==="not_granted"?"Automatic reading is off because AI access wasn't allowed. Enter the values below.":"Couldn't read the report automatically. Enter or correct the values below."}
+  } else if(!err) err="Automatic reading isn't available here. Enter the values below; the file is still saved.";
+  // upload original
+  let asset=null;const as=await getAssets();
+  if(as){try{const up=await as.upload(file.type==="application/pdf"?file:(images[0]||file));asset={assetId:up.id,assetUrl:up.url,assetType:up.contentType}}catch(e){}}
+  reviewSheet({extracted,previewUrl,asset,err,fileName:file.name});
+}
+async function shrinkImage(file){
+  const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=URL.createObjectURL(file)});
+  const max=1800;const sc=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
+  const c=document.createElement("canvas");c.width=Math.round(img.naturalWidth*sc);c.height=Math.round(img.naturalHeight*sc);
+  c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+  return await new Promise(r=>c.toBlob(r,"image/jpeg",0.85));
+}
+let pdfReady=null;
+function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement("script");s.src=src;s.onload=res;s.onerror=()=>rej(new Error("load "+src));setTimeout(()=>rej(new Error("slow "+src)),15000);document.head.appendChild(s)})}
+async function looksPdf(file){
+  if(file.type==="application/pdf"||/\.pdf$/i.test(file.name||""))return true;
+  try{const b=new Uint8Array(await file.slice(0,5).arrayBuffer());return String.fromCharCode(...b)==="%PDF-"}catch(e){return false}
+}
+async function readPdf(file){
+  if(!pdfReady)pdfReady=(async()=>{await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js");await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js");window.pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"})();
+  try{await pdfReady}catch(e){pdfReady=null;throw e}
+  const pdf=await window.pdfjsLib.getDocument({data:new Uint8Array(await file.arrayBuffer()),isEvalSupported:false}).promise;
+  let text="";const images=[];
+  for(let i=1;i<=Math.min(pdf.numPages,6);i++){const pg=await pdf.getPage(i);
+    try{const tc=await pg.getTextContent();let lastY=null;let line="";for(const it of tc.items){const y=it.transform?Math.round(it.transform[5]):null;if(lastY!==null&&y!==null&&Math.abs(y-lastY)>3){text+=line.trim()+"\n";line=""}line+=it.str+" ";lastY=y}text+=line.trim()+"\n\n"}catch(e){}
+    if(i<=3){const vp0=pg.getViewport({scale:1});const vp=pg.getViewport({scale:Math.min(2.2,1500/vp0.width)});
+      const c=document.createElement("canvas");c.width=vp.width;c.height=vp.height;const ctx=c.getContext("2d");ctx.fillStyle="#fff";ctx.fillRect(0,0,c.width,c.height);
+      await pg.render({canvasContext:ctx,viewport:vp}).promise;images.push(await new Promise(r=>c.toBlob(r,"image/jpeg",0.85)))}}
+  return {text:text.slice(0,40000),images};
+}
+async function extract(sample,src){
+  const mid=S.sel!=="all"?S.sel:null;
+  const known=mid?trendData(mid).params.map(p=>p.name):[];
+  const prompt=`You read Indian medical documents: lab reports, prescriptions, discharge summaries. Read the ${src.text?"document text below (extracted from a PDF; table columns may be run together on one line)":"attached page images"} and return JSON only, in exactly this shape:
+{"type":"blood"|"prescription"|"other","title":string,"date":"YYYY-MM-DD"|null,"lab":string|null,"patientName":string|null,"results":[{"name":string,"value":number|null,"text":string|null,"unit":string,"low":number|null,"high":number|null}],"medicines":[{"name":string,"dose":string,"frequency":string}],"notes":string}
+Rules:
+- "blood" means any lab test report with values (blood, urine, thyroid, lipid etc). "prescription" means a doctor's prescription.
+- title: short, e.g. "Lipid profile", "CBC & thyroid", or "Dr. Sharma, cardiology follow-up".
+- date: the sample collection or report date; prescription date for prescriptions.
+- results: one entry per test with a value. Use the number only in value; put non-numeric results (e.g. "Negative") in text with value null. low/high from the printed reference range (for "<100" use low null, high 100).
+- Use common short test names (HbA1c, Haemoglobin, Fasting Blood Sugar, TSH, LDL Cholesterol, Vitamin D, Creatinine...).${known.length?" Reuse these exact names where the same test appears: "+known.join(", ")+".":""}
+- medicines: brand name with generic in brackets when you know it, e.g. "Glycomet (Metformin)". frequency in plain words, e.g. "Twice daily after meals". Translate 1-0-1, BD, OD, HS, SOS into words.
+- notes: advice or follow-up instructions written on the document, in one or two sentences, else "".
+- If something isn't readable, leave it out rather than guessing.${src.text?"\n\nDOCUMENT TEXT:\n"+src.text:""}`;
+  const r=await sample.json(prompt,src.text?{modelTier:"default"}:{images:src.images,modelTier:"default"});
+  if(!r||typeof r!=="object")throw {code:"bad"};
+  return r;
+}
+
+function reviewSheet({extracted,previewUrl,asset,err,fileName,existing}){
+  const e=existing||extracted||{};
+  const ms=members();
+  let mid=existing?existing.memberId:(S.sel!=="all"?S.sel:ms[0].id);
+  if(!existing&&e.patientName){const pn=String(e.patientName).toLowerCase();const hit=ms.find(m=>pn.includes(m.name.toLowerCase()));if(hit)mid=hit.id}
+  let results=(e.results||[]).map(r=>({name:r.name||"",value:r.value??r.text??"",unit:r.unit||"",low:r.low??"",high:r.high??""}));
+  let medsL=(e.medicines||[]).map(m=>({name:m.name||"",dose:m.dose||"",frequency:m.frequency||""}));
+  const type=e.type||"blood";
+  const preview=previewUrl?`<img class="thumb" src="${previewUrl}" alt="Uploaded report">`:(existing&&existing.assetUrl&&String(existing.assetType||"").startsWith("image/")?`<img class="thumb" src="${esc(existing.assetUrl)}" alt="Saved report">`:"");
+  openSheet(`${sheetHead(existing?"Edit report":extracted?"Check what was read":"Report details")}
+    ${err?`<div class="note">${esc(err)}</div>`:extracted?`<div class="note">Read automatically. Check the values against the report before saving.</div>`:""}
+    ${preview}
+    <form id="rForm" style="display:grid;gap:14px">
+      <div class="two"><div class="field"><label for="rMem">For</label><select id="rMem">${ms.map(m=>`<option value="${esc(m.id)}" ${m.id===mid?"selected":""}>${esc(m.name)}</option>`).join("")}</select></div>
+      <div class="field"><label for="rType">Type</label><select id="rType"><option value="blood" ${type==="blood"?"selected":""}>Lab report</option><option value="prescription" ${type==="prescription"?"selected":""}>Prescription</option><option value="other" ${type==="other"?"selected":""}>Other document</option></select></div></div>
+      <div class="field"><label for="rTitle">Title</label><input id="rTitle" value="${esc(e.title||"")}" placeholder="e.g. Lipid profile"></div>
+      <div class="two"><div class="field"><label for="rDate">Date</label><input id="rDate" type="date" value="${esc(e.date||new Date().toISOString().slice(0,10))}"></div>
+      <div class="field"><label for="rLab">Lab / doctor</label><input id="rLab" value="${esc(e.lab||"")}"></div></div>
+      <div id="resBox"></div>
+      <div id="medBox"></div>
+      <div class="field"><label for="rNotes">Notes</label><textarea id="rNotes" rows="2">${esc(e.notes||"")}</textarea></div>
+      <label class="row" id="addCurWrap" style="font-size:15px"><input type="checkbox" id="addCur" ${existing?"":"checked"} style="width:20px;height:20px"> Add these medicines to the current medicines list</label>
+      <div class="row"><button class="btn" type="submit">Save report</button><button class="btn quiet" type="button" data-act="close">Cancel</button></div>
+    </form>`,sh=>{
+      const tSel=sh.querySelector("#rType");
+      function syncRows(){sh.querySelectorAll("[data-ri]").forEach(inp=>{const [i,f]=inp.dataset.ri.split(":");if(results[i])results[i][f]=inp.value});sh.querySelectorAll("[data-mi]").forEach(inp=>{const [i,f]=inp.dataset.mi.split(":");if(medsL[i])medsL[i][f]=inp.value})}
+      function draw(){
+        const t=tSel.value;
+        sh.querySelector("#resBox").innerHTML=t==="prescription"&&!results.length?"":`<div class="field"><label>Test values</label><div class="grid-in"><div class="r hdr"><span class="nm">Test</span><span>Value</span><span>Unit</span><span class="lo">Low</span><span class="hi">High</span><span></span></div>${results.map((r,i)=>`<div class="r"><input class="nm" data-ri="${i}:name" value="${esc(r.name)}" placeholder="Test" aria-label="Test name" id="rn${i}"><input class="va" data-ri="${i}:value" value="${esc(r.value)}" placeholder="Value" aria-label="Value" inputmode="decimal" id="rv${i}"><input class="un" data-ri="${i}:unit" value="${esc(r.unit)}" placeholder="Unit" aria-label="Unit" id="ru${i}"><input class="lo" data-ri="${i}:low" value="${esc(r.low)}" placeholder="Range low" aria-label="Range low" inputmode="decimal" id="rl${i}"><input class="hi" data-ri="${i}:high" value="${esc(r.high)}" placeholder="Range high" aria-label="Range high" inputmode="decimal" id="rh${i}"><button class="x" type="button" data-rdel="${i}" aria-label="Remove row">${ICON.x}</button></div>`).join("")}<button class="btn ghost small" type="button" data-radd style="justify-self:start">+ Add test</button></div></div>`;
+        sh.querySelector("#medBox").innerHTML=t==="blood"&&!medsL.length?"":`<div class="field"><label>Medicines</label><div class="grid-in"><div class="r m hdr"><span class="nm">Medicine</span><span>Dose</span><span>When</span><span></span></div>${medsL.map((m,i)=>`<div class="r m"><input class="nm" data-mi="${i}:name" value="${esc(m.name)}" placeholder="Medicine" aria-label="Medicine" id="mn${i}"><input class="do" data-mi="${i}:dose" value="${esc(m.dose)}" placeholder="Dose" aria-label="Dose" id="mdo${i}"><input class="fr" data-mi="${i}:frequency" value="${esc(m.frequency)}" placeholder="When" aria-label="When" id="mfr${i}"><button class="x" type="button" data-mdel="${i}" aria-label="Remove medicine">${ICON.x}</button></div>`).join("")}<button class="btn ghost small" type="button" data-madd style="justify-self:start">+ Add medicine</button></div></div>`;
+        sh.querySelector("#addCurWrap").hidden=!medsL.length&&t!=="prescription";
+      }
+      draw();
+      tSel.addEventListener("change",()=>{syncRows();draw()});
+      sh.addEventListener("click",ev=>{const b=ev.target.closest("[data-rdel],[data-radd],[data-mdel],[data-madd]");if(!b)return;syncRows();
+        if(b.dataset.rdel!==undefined)results.splice(+b.dataset.rdel,1);else if(b.hasAttribute("data-radd"))results.push({name:"",value:"",unit:"",low:"",high:""});
+        else if(b.dataset.mdel!==undefined)medsL.splice(+b.dataset.mdel,1);else medsL.push({name:"",dose:"",frequency:""});draw()});
+      sh.querySelector("#rForm").addEventListener("submit",async ev=>{ev.preventDefault();syncRows();
+        const memberId=sh.querySelector("#rMem").value;const t=tSel.value;
+        const res=results.filter(r=>String(r.name).trim()&&String(r.value).trim()!=="").map(r=>{const v=toNum(r.value);const isNum=v!==null&&/^\s*[<>]?\s*[\d.,]+\s*$/.test(String(r.value));return {name:String(r.name).trim(),value:isNum?v:null,text:isNum?null:String(r.value).trim(),unit:String(r.unit||"").trim(),low:toNum(r.low),high:toNum(r.high)}});
+        const md=medsL.filter(m=>String(m.name).trim()).map(m=>({name:m.name.trim(),dose:String(m.dose||"").trim(),frequency:String(m.frequency||"").trim()}));
+        const title=sh.querySelector("#rTitle").value.trim()||(t==="blood"?"Lab report":t==="prescription"?"Prescription":"Document");
+        const doc={...(existing||{id:"r"+uid(),kind:"record",createdAt:Date.now(),...(asset||{})}),memberId,type:t,title,date:sh.querySelector("#rDate").value||null,lab:sh.querySelector("#rLab").value.trim(),results:res,medicines:md,notes:sh.querySelector("#rNotes").value.trim()};
+        const addCur=sh.querySelector("#addCur").checked&&md.length;
+        closeSheet();S.sel=memberId;S.tab="records";await put(doc);
+        if(addCur){const have=meds(memberId).map(m=>m.name.toLowerCase());const nd=md.filter(m=>!have.includes(m.name.toLowerCase())).map((m,i)=>({id:"d"+uid()+i,kind:"med",memberId,name:m.name,dose:m.dose,frequency:m.frequency,fromRecord:doc.id,createdAt:Date.now()+i}));if(nd.length)await putMany(nd)}
+        toast("Report saved");
+      });
+    });
+}
+
+function recordSheet(id){
+  const r=S.items[id];if(!r)return;const m=member(r.memberId);
+  const res=r.results||[];
+  const file=r.assetUrl?(String(r.assetType||"").startsWith("image/")?`<img class="thumb" src="${esc(r.assetUrl)}" alt="Original report">`:`<a class="btn ghost" href="${esc(r.assetUrl)}" target="_blank" rel="noopener">Open original file</a>`):"";
+  openSheet(`${sheetHead(r.title||"Report")}
+    <div class="row" style="gap:8px">${m?`<span class="pill n">${esc(m.name)}</span>`:""}<span class="pill n">${fmtDate(r.date)}</span>${r.lab?`<span class="pill n">${esc(r.lab)}</span>`:""}${r.example?'<span class="pill ex">Example</span>':""}</div>
+    ${res.length?`<div class="tablewrap"><table><thead><tr><th>Test</th><th style="text-align:right">Result</th><th>Ref. range</th></tr></thead><tbody>${res.map(x=>{const f=flagOf(x);return `<tr><td style="white-space:normal;font-weight:700">${esc(x.name)}</td><td class="v ${f==="H"?"h":f==="L"?"l":""}">${esc(x.value??x.text??"")} <span class="muted" style="font-weight:400">${esc(x.unit||"")}</span>${f?" "+f:""}</td><td class="ref">${x.low!==null&&x.low!==undefined||x.high!==null&&x.high!==undefined?`${x.low??""}–${x.high??""}`:"—"}</td></tr>`}).join("")}</tbody></table></div>`:""}
+    ${(r.medicines||[]).length?`<div class="card" style="padding:4px 16px"><div class="list" style="gap:0">${r.medicines.map(x=>`<div class="med"><div><b>${esc(x.name)}</b> <span class="num muted" style="font-size:14px">${esc(x.dose||"")}</span><p>${esc(x.frequency||"")}</p></div></div>`).join("")}</div></div>`:""}
+    ${r.notes?`<div class="note">${esc(r.notes)}</div>`:""}
+    ${file}
+    <div class="row"><button class="btn quiet" type="button" id="rEdit">Edit</button><button class="btn danger" type="button" id="rDel">Delete…</button></div><div id="rConfirm"></div>`,sh=>{
+      sh.querySelector("#rEdit").addEventListener("click",()=>reviewSheet({existing:r}));
+      sh.querySelector("#rDel").addEventListener("click",()=>{sh.querySelector("#rConfirm").innerHTML=`<div class="note">Delete this report? <div class="row" style="margin-top:8px"><button class="btn danger small" type="button" id="rDel2">Yes, delete</button><button class="btn quiet small" type="button" data-act="close">Cancel</button></div></div>`;
+        sh.querySelector("#rDel2").addEventListener("click",async()=>{closeSheet();await removeDoc(r.id);if(r.assetId&&Cap.assets){try{await Cap.assets.delete(r.assetId)}catch(e){}}toast("Report deleted")})});
+    });
+}
+
+/* ---------- AI: interactions & chat ---------- */
+let ixNote="";
+async function checkIx(mid){ixNote="";
+  const list=meds(mid);if(list.length<2)return;
+  S.ixBusy=true;S.ixFor=mid;S.ixResult=null;render();
+  const sample=await getSample();let result=null;
+  if(sample){
+    try{
+      const m=member(mid);
+      const r=await sample.json(`You are a careful clinical pharmacist in India. Check this person's current medicines for drug-drug interactions (brand names are Indian brands; work out the generic). Also flag duplicate therapy (two medicines with the same ingredient or class).
+Person: ${m.relation||""}, age ${m.age||"unknown"}.
+Medicines:
+${list.map(x=>`- ${x.name} ${x.dose||""} — ${x.frequency||""}`).join("\n")}
+Return JSON only: {"items":[{"drugs":[string,string],"severity":"major"|"moderate"|"minor","effect":string,"advice":string}],"note":string}
+effect: one plain-language sentence on what can happen. advice: one practical sentence (e.g. timing gap, what to watch for, ask the doctor). Use the medicine names as written above. Only include clinically recognised interactions. note: one sentence, e.g. timing tips, or "".`,{modelTier:"default"});
+      if(r&&Array.isArray(r.items))result={source:"ai",items:r.items,note:r.note||""};
+    }catch(e){if(e&&e.code==="no_key")ixNote="Used the built-in list. Add your Claude API key (gear icon) for a full AI check."}
+  }
+  if(!result)result={source:"local",items:localCheck(list),note:ixNote||"AI checking isn't available right now, so this used a short built-in list of common interactions."};
+  S.ixBusy=false;S.ixResult=result;render();
+}
+function contextText(){
+  const ms=S.sel==="all"?members():[member(S.sel)];
+  return ms.map(m=>{
+    const recs=records(m.id).slice().reverse();
+    let t=`## ${m.name} (${m.relation||""}${m.age?", "+m.age+" yrs":""})\nCurrent medicines: ${meds(m.id).map(x=>`${x.name} ${x.dose||""} (${x.frequency||""})`).join("; ")||"none recorded"}\n`;
+    recs.forEach(r=>{t+=`- ${r.date||"undated"} ${r.type==="blood"?"LAB REPORT":r.type.toUpperCase()} "${r.title}"${r.lab?" at "+r.lab:""}`;
+      if((r.results||[]).length)t+=": "+r.results.map(x=>`${x.name} ${x.value??x.text}${x.unit?" "+x.unit:""}${x.low!=null||x.high!=null?` [ref ${x.low??""}-${x.high??""}]`:""}${flagOf(x)?" "+flagOf(x):""}`).join("; ");
+      if((r.medicines||[]).length)t+=": prescribed "+r.medicines.map(x=>`${x.name} ${x.dose||""} ${x.frequency||""}`).join("; ");
+      if(r.notes)t+=` (note: ${r.notes})`;t+="\n"});
+    return t;}).join("\n");
+}
+async function ask(q){
+  q=q.trim();if(!q||S.chatBusy)return;
+  const ai=$("#askIn");if(ai&&coarse)ai.blur();document.body.classList.remove("typing");
+  S.chat.push({role:"user",content:q});const ans={role:"assistant",content:""};S.chat.push(ans);S.chatBusy=true;render();scrollEnd();
+  const sample=await getSample();
+  if(!sample){ans.content="The assistant isn't available in this view. Open this app from your Claude account and allow AI access to ask questions.";S.chatBusy=false;render();return}
+  const hist=S.chat.slice(0,-2).slice(-8).map(c=>`${c.role==="user"?"Q":"A"}: ${c.content}`).join("\n");
+  const today=new Date().toISOString().slice(0,10);
+  const prompt=`You are a friendly family health assistant inside a personal health records app in India. Today is ${today}. Answer ONLY from the records below. If the records don't contain the answer, say so plainly. Mention report dates when you cite values. Explain medical terms in simple words. H/L marks values above/below the lab's reference range. Do not diagnose or change treatment; when something looks concerning, suggest discussing it with their doctor. Reply in the language the question is asked in (Hindi, Hinglish or English). Keep answers short: a few sentences or a short "- " list. No headings, no tables.
+
+RECORDS:
+${contextText()}
+${hist?"\nEARLIER IN THIS CHAT:\n"+hist+"\n":""}
+QUESTION: ${q}`;
+  try{await sample(prompt,{cache:false,modelTier:"default",onText:({text})=>{ans.content=text;updateLastMsg(text)}})}
+  catch(e){ans.content=e&&(e.code==="no_key"||e.code==="api_error")?e.message:e&&e.text?e.text:(e&&e.code==="not_granted"?"AI access wasn't allowed for this page, so I can't answer. You can allow it from the page's permissions.":"Something went wrong getting an answer. Try again in a moment.")}
+  S.chatBusy=false;render();scrollEnd();
+}
+function updateLastMsg(t){const els=document.querySelectorAll("#chat .msg.a");const el=els[els.length-1];if(el)el.innerHTML=mdLite(t);}
+function scrollEnd(){requestAnimationFrame(()=>window.scrollTo({top:document.body.scrollHeight}))}
+
+let tt;function toast(t){clearTimeout(tt);let el=$("#toast");if(!el){el=document.createElement("div");el.id="toast";el.className="toast";el.setAttribute("role","status");document.body.appendChild(el)}el.textContent=t;el.hidden=false;tt=setTimeout(()=>el.hidden=true,2600)}
+
+/* ---------- events ---------- */
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-sel],[data-tab],[data-act],[data-open],[data-param],[data-delmed],[data-ix],[data-q]");if(!t)return;
+  if(t.dataset.sel!==undefined){S.sel=t.dataset.sel;S.param=null;S.ixResult=null;render();return}
+  if(t.dataset.tab){S.tab=t.dataset.tab;render();window.scrollTo({top:0});return}
+  if(t.dataset.open){recordSheet(t.dataset.open);return}
+  if(t.dataset.param){S.param=t.dataset.param;render();return}
+  if(t.dataset.delmed){const m=S.items[t.dataset.delmed];removeDoc(t.dataset.delmed);S.ixResult=null;toast(`Removed ${m?.name||"medicine"}`);return}
+  if(t.dataset.ix){checkIx(t.dataset.ix);return}
+  if(t.dataset.q){ask(t.dataset.q);return}
+  const a=t.dataset.act;
+  if(a==="add-member")memberSheet();
+  else if(a==="close")closeSheet();
+  else if(a==="edit-member"&&member(S.sel))memberSheet(member(S.sel));
+  else if(a==="load-ex"){putMany(exampleDocs());S.sel="ex-fa";render();toast("Example family loaded")}
+  else if(a==="clear-ex")clearExamples();
+  else if(a==="add-report")addSheet();
+  else if(a==="manual")reviewSheet({});
+});
+document.addEventListener("dblclick",e=>{const c=e.target.closest(".chip[data-sel]");if(c&&member(c.dataset.sel))memberSheet(member(c.dataset.sel))});
+document.addEventListener("contextmenu",e=>{const c=e.target.closest(".chip[data-sel]");if(c&&member(c.dataset.sel)){e.preventDefault();memberSheet(member(c.dataset.sel))}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("#scrim"))closeSheet();const tr=e.target.closest&&e.target.closest("tr[data-param]");if(tr&&(e.key==="Enter"||e.key===" ")){e.preventDefault();S.param=tr.dataset.param;render()}
+  if(e.target.id==="askIn"&&e.key==="Enter"&&!e.shiftKey){e.preventDefault();const v=e.target.value;e.target.value="";ask(v)}});
+document.addEventListener("submit",e=>{
+  if(e.target.id==="askForm"){e.preventDefault();const i=$("#askIn");const v=i.value;i.value="";ask(v);return}
+  const mid=e.target.dataset&&e.target.dataset.addmed;
+  if(mid){e.preventDefault();const f=e.target;const name=f.name.value.trim();if(!name)return;put({id:"d"+uid(),kind:"med",memberId:mid,name,dose:f.dose.value.trim(),frequency:f.freq.value.trim(),createdAt:Date.now()});S.ixResult=null;toast("Added "+name)}
+});
+$("#fab").addEventListener("click",addSheet);
+document.addEventListener("change",e=>{const t=e.target;if(!t||t.type!=="file"||!t.closest(".tile"))return;const f=t.files&&t.files[0];if(f)handleFile(f)});
+document.addEventListener("dragover",e=>{if($("#scrim .pick"))e.preventDefault()});
+document.addEventListener("drop",e=>{if(!$("#scrim .pick"))return;e.preventDefault();const f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];if(f)handleFile(f)});
+document.addEventListener("paste",e=>{const it=[...(e.clipboardData?.items||[])].find(i=>i.kind==="file"&&/^image\/|pdf/.test(i.type));if(!it||!members().length)return;e.preventDefault();handleFile(it.getAsFile())});
+
+const coarse=window.matchMedia&&matchMedia("(pointer:coarse)").matches;
+let tyT;
+document.addEventListener("focusin",e=>{const t=e.target;if(!coarse||!t||!t.matches||!t.matches("input:not([type=file]):not([type=checkbox]),textarea,select"))return;clearTimeout(tyT);document.body.classList.add("typing")});
+document.addEventListener("focusout",()=>{tyT=setTimeout(()=>document.body.classList.remove("typing"),120)});
+if(window.visualViewport){let fullH=window.visualViewport.height;window.visualViewport.addEventListener("resize",()=>{const h=window.visualViewport.height;if(h>fullH)fullH=h;if(h>fullH-80&&document.body.classList.contains("typing")){document.body.classList.remove("typing");const a=document.activeElement;if(a&&a.blur&&a.id==="askIn")a.blur()}})}
+function settingsSheet(){
+  const k=window.__apk.getKey();
+  openSheet(`${sheetHead("Settings")}
+    <div class="field"><label for="apiKey">Claude API key</label><input id="apiKey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="sk-ant-…" value="${esc(k)}"></div>
+    <p class="disclaimer">Reading reports, the AI interaction check and Ask use your own key from console.anthropic.com. The key stays on this phone, and usage is billed to your Anthropic account. Everything else works without a key.</p>
+    <div class="row"><button class="btn" type="button" id="kSave">Save key</button>${k?'<button class="btn danger" type="button" id="kDel">Remove key</button>':""}</div>
+    <p class="disclaimer">Your records are stored only in this app on this phone. Uninstalling the app deletes them.</p>`,sh=>{
+      sh.querySelector("#kSave").addEventListener("click",()=>{const v=sh.querySelector("#apiKey").value.trim();window.__apk.setKey(v);closeSheet();toast(v?"Key saved":"Key removed")});
+      const d=sh.querySelector("#kDel");if(d)d.addEventListener("click",()=>{window.__apk.setKey("");closeSheet();toast("Key removed")});
+    });
+}
+if(window.__apk){$("#gear").hidden=false;$("#gear").addEventListener("click",settingsSheet)}
+window.__back=function(){if($("#scrim")){closeSheet();return true}if(S.tab!=="records"){S.tab="records";render();window.scrollTo({top:0});return true}return false};
+let sharedWaiting=null;
+window.__sharedFile=function(name,mime,b64){
+  try{const bin=atob(b64);const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
+    const f=new File([u],name||"shared-report",{type:mime||"application/octet-stream"});
+    if(!members().length){sharedWaiting=f;toast("Add a family member first, then the shared report opens");memberSheet();return}
+    S.tab="records";handleFile(f);
+  }catch(e){toast("Couldn't open the shared file")}
+};
+const _put=put;put=async function(doc){await _put(doc);if(sharedWaiting&&doc.kind==="member"){const f=sharedWaiting;sharedWaiting=null;setTimeout(()=>handleFile(f),300)}};
+loadLocal();render();initCloud();
+})();
+</script>
+</body></html>
